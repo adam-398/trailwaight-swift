@@ -12,7 +12,7 @@ struct GearList: Codable, Identifiable {
     var userId: String
     var name: String
     var notes: String?
-    var createdAt: String
+    var createdAt: String?
     
     enum CodingKeys: String, CodingKey {
         case id
