@@ -32,7 +32,7 @@ class Router: ObservableObject {
     
     ///Navigate to a new screen
     /// - Parameter route: The destination route
-    func naviagte(to route: Route) {
+    func navigate(to route: Route) {
         path.append(route)
     }
     
