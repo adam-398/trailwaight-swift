@@ -5,38 +5,53 @@
 //  Created by Adam on 2026-06-25.
 //
 
-import Foundation
 import SwiftUI
 
+/// Defines the visual style of a TrailWeightButton
 enum TrailWeightButtonStyle {
-    case primary, secondary, outlined, destructive
+    /// Filled button with primary color background
+    case primary
+    /// Filled button with secondary color background
+    case secondary
+    /// Transparent button with primary color border
+    case outlined
+    /// Filled button with error color background for destructive actions
+    case destructive
 }
 
+/// A reusable button component with multiple styles.
 struct TrailWeightButton: View {
+    
     var text: String? = nil
     let action: () -> Void
     var style: TrailWeightButtonStyle = .primary
     var icon: String? = nil
     var enabled: Bool = true
     
+    /// Current color scheme for dark/light mode
+    @Environment(\.colorScheme) var colorScheme
+    
+
+    private var colors: AppColors { AppColors.current(isDark: colorScheme == .dark) }
+
     private var contentColor: Color {
         switch style {
-        case .primary:     return .white
-        case .secondary:   return .white
-        case .outlined:    return .accentColor
-        case .destructive: return .white
+        case .primary:     return colors.onPrimary
+        case .secondary:   return colors.onSecondary
+        case .outlined:    return colors.primary
+        case .destructive: return colors.onPrimary
         }
     }
-    
+
     private var backgroundColor: Color {
         switch style {
-        case .primary: return .accentColor
-        case .secondary: return .secondary
-        case .outlined: return .clear
-        case .destructive: return .red
+        case .primary:     return colors.primary
+        case .secondary:   return colors.secondary
+        case .outlined:    return .clear
+        case .destructive: return colors.error
         }
     }
-    
+
     var body: some View {
         Button(action: action) {
             HStack(spacing: 8) {
@@ -55,7 +70,7 @@ struct TrailWeightButton: View {
             .clipShape(RoundedRectangle(cornerRadius: 8))
             .overlay(
                 RoundedRectangle(cornerRadius: 8)
-                    .stroke(style == .outlined ? Color.accentColor : .clear, lineWidth: 1)
+                    .stroke(style == .outlined ? colors.primary : .clear, lineWidth: 1)
             )
             .shadow(
                 color: (style == .outlined || !enabled) ? .clear : Color.black.opacity(0.15),

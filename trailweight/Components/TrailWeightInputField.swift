@@ -15,31 +15,29 @@ struct TrailWeightInputField<TrailingIcon: View>: View {
     
     /// The current value of the field
     @Binding var value: String
-    
-    /// Whether the field should obscure input (password)
+
     var isPassword: Bool = false
-    
-    /// Whether the field is in an error state
     var isError: Bool = false
-    
-    /// The return key label
     var submitLabel: SubmitLabel = .done
-    
-    /// Action to perform when the user hits return
     var onSubmit: (() -> Void)? = nil
     
-    /// Optional trailing icon (e.g. password visibility toggle)
+
     @ViewBuilder var trailingIcon: () -> TrailingIcon
+    @Environment(\.colorScheme) var colorScheme
+    
+    /// Shorthand for current app colors
+    private var colors: AppColors { AppColors.current(isDark: colorScheme == .dark) }
 
     @FocusState private var isFocused: Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
+
             Text(label)
                 .font(.caption)
                 .foregroundColor(
-                    isError ? .red :
-                    isFocused ? .accentColor : .secondary
+                    isError ? colors.error :
+                    isFocused ? colors.primary : .secondary
                 )
 
             HStack {
@@ -59,13 +57,13 @@ struct TrailWeightInputField<TrailingIcon: View>: View {
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 10)
-            .background(Color.secondary.opacity(0.1))
+            .background(colors.surfaceVariant.opacity(0.5))
             .clipShape(RoundedRectangle(cornerRadius: 8))
             .overlay(
                 RoundedRectangle(cornerRadius: 8)
                     .stroke(
-                        isError ? Color.red :
-                        isFocused ? Color.accentColor : Color.gray.opacity(0.4),
+                        isError ? colors.error :
+                        isFocused ? colors.primary : Color.gray.opacity(0.4),
                         lineWidth: 1
                     )
             )
@@ -73,7 +71,7 @@ struct TrailWeightInputField<TrailingIcon: View>: View {
     }
 }
 
-/// Convenience init for fields with no trailing icon
+
 extension TrailWeightInputField where TrailingIcon == EmptyView {
     init(
         label: String,
