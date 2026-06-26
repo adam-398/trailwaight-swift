@@ -9,9 +9,12 @@ import SwiftUI
 
 @main
 struct trailweightApp: App {
+    @StateObject var router = Router()
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            LoginView()
+                .environmentObject(router)
         }
     }
 }
