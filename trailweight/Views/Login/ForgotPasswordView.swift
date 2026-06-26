@@ -14,6 +14,7 @@ struct ForgotPasswordView: View {
     @State private var email = ""
     @State private var errorMessage = ""
     @State private var isLoading = false
+    @State private var showSuccess = false
     
     @EnvironmentObject var router: Router
     @Environment(\.colorScheme) var colorScheme
@@ -57,23 +58,60 @@ struct ForgotPasswordView: View {
                         .onChange(of: email) { errorMessage = "" }
                         
                         
-                        TrailWeightButton(text: isLoading ? "Resetting..." : "Reset password") {
+                        TrailWeightButton(
+                            text: isLoading ? "Resetting..." : "Reset password",
+                        action: {
                             guard !isLoading else { return }
                             Task {
                                 isLoading = true
                                 let success = await resetPassword(email: email)
                                 isLoading = false
                                 if success {
-                                    router.navigate(to: .landing)
+                                    showSuccess = true
                                 } else {
                                     errorMessage = "Invalid email or password"
                                 }
                             }
                         }
+                    )
                         .padding(.top, 16)
                         .frame(height: 50)
                     }
+                    .padding(24)
+                    .background(colors.surface)
+                    .clipShape(RoundedRectangle(cornerRadius: 24))
+                    .shadow(radius: 4)
+                    
+                    if !errorMessage.isEmpty {
+                        Text(errorMessage)
+                            .foregroundColor(colors.error)
+                            .multilineTextAlignment(.center)
+                            .padding(.top, 16)
+                    }
+                    
+                    Button("Back to login") {
+                        router.goBack()
+                    }
+                    .font(.callout)
+                    .fontWeight(.medium)
+                    .foregroundColor(colors.primary)
+                    .padding(.top, 24)
+                    
+                    Spacer(minLength: 40)
                 }
+                .padding(.horizontal, 24)
+            }
+            .scrollDismissesKeyboard(.interactively)
+            
+            if showSuccess {
+                ReusableMessage(title: "Check your email",
+                                message: "We have sent a reset link to \(email)",
+                                confirmString: "Back to login",
+                                onConfirm: {
+                                    showSuccess = false
+                                    router.goBack()
+                }
+            )
             }
         }
     }
